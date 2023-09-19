@@ -50,7 +50,7 @@ fn is_process_running(process_name: &str) -> bool {
     {
         let reader = BufReader::new(output.stdout.unwrap());
         for line in reader.lines() {
-            if let Ok(_) = line {
+            if line.is_ok() {
                 return true;
             }
         }

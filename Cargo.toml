@@ -1,0 +1,18 @@
+[package]
+name = "window-opacifier"
+description = "Rust crate for fine-grained x11 window opacity control"
+version = "0.1.0"
+edition = "2021"
+readme = "readme.md"
+license-file = "LICENSE"
+repository = "https://github.com/TanvirOnGH/window-opacifier"
+keywords = ["x11", "window", "opacity", "transparency", "animation"]
+categories = ["graphics"]
+publish = false
+authors = ["Tanvir <tanvir.ahmed.tonoy@skiff.com>"]
+
+[badges]
+maintenance = { status = "experimental" }
+
+[dependencies]
+ctrlc = ">=3.4.1"

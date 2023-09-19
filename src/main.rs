@@ -1,6 +1,6 @@
 extern crate ctrlc;
 use std::{
-    io::{BufRead, BufReader, Result},
+    io::{BufRead, BufReader, Error, ErrorKind, Result},
     process::{exit, Command, Stdio},
     str::FromStr,
     thread::sleep,
@@ -26,8 +26,8 @@ fn get_current_window_opacity() -> Result<u8> {
         eprintln!("Command failed with an error: {:?}", output.status);
     }
 
-    Err(std::io::Error::new(
-        std::io::ErrorKind::Other,
+    Err(Error::new(
+        ErrorKind::Other,
         "Failed to get and parse integer from command output",
     ))
 }

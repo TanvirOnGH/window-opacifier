@@ -1,7 +1,10 @@
+extern crate anyhow;
 use crate::config::Config;
-use std::{error::Error, process::Command, str::FromStr};
 
-pub fn get_current_window_opacity() -> Result<u8, Box<dyn Error>> {
+use anyhow::Result;
+use std::{process::Command, str::FromStr};
+
+pub fn get_current_window_opacity() -> Result<u8> {
     let output = Command::new("picom-trans").args(["-c", "-g"]).output()?;
 
     if output.status.success() {
@@ -15,7 +18,9 @@ pub fn get_current_window_opacity() -> Result<u8, Box<dyn Error>> {
         eprintln!("Command failed with an error: {:?}", output.status);
     }
 
-    Err("Failed to get and parse integer from command output")?
+    Err(anyhow::anyhow!(
+        "Failed to get and parse integer from command output",
+    ))
 }
 
 pub fn set_window_opacity(opacity: u8) {

@@ -1,7 +1,8 @@
+extern crate anyhow;
 extern crate toml;
 
-use std::fs::File;
-use std::io::Read;
+use anyhow::Result;
+use std::{fs::File, io::Read};
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -10,7 +11,7 @@ pub struct Config {
     pub sleep_duration_ms: u64,
 }
 
-pub fn read_config(config_path: &str) -> Result<Config, Box<dyn std::error::Error>> {
+pub fn read_config(config_path: &str) -> Result<Config> {
     let mut config_file = File::open(config_path)?;
     let mut config_content = String::new();
     config_file.read_to_string(&mut config_content)?;

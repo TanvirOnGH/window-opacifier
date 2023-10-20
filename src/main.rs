@@ -23,10 +23,11 @@ fn main() -> Result<()> {
     let config_path = home_dir.join(".config/window-opacifier/config.toml");
 
     if !config_path.exists() {
-        return Err(anyhow::anyhow!(
-            "Configuration file not found at {}",
+        eprintln!(
+            "Configuration file not found at {}. Creating one with default values.",
             config_path.display()
-        ));
+        );
+        config::create_default_config(config_path.to_str().unwrap())?;
     }
 
     let config = config::read_config(config_path.to_str().unwrap())?;

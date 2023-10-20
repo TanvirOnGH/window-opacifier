@@ -16,6 +16,10 @@ opt-level = 3
 lto = "fat"
 debug = false
 
+[[bin]]
+name = "window-opacifier"
+path = "src/main.rs"
+
 [badges]
 maintenance = { status = "experimental" }
 

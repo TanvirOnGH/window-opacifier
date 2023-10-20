@@ -11,12 +11,11 @@ use std::{
 // TODO: Add documentation
 
 fn get_current_window_opacity() -> Result<u8> {
-    // TODO: Add error handling for Command::new() and Command::args()
+    // Get the opacity of the current window using the 'picom-trans' command
     let output = Command::new("picom-trans").args(&["-c", "-g"]).output()?;
 
     if output.status.success() {
         let output_str = String::from_utf8_lossy(&output.stdout);
-
         if let Ok(parsed_opacity) = u8::from_str(output_str.trim()) {
             return Ok(parsed_opacity);
         } else {
@@ -33,7 +32,6 @@ fn get_current_window_opacity() -> Result<u8> {
 }
 
 fn set_window_opacity(opacity: u8) -> () {
-    // TODO: Add error handling for Command::new() and Command::arg()
     Command::new("picom-trans")
         .arg("-c")
         .arg("-o")
@@ -42,32 +40,33 @@ fn set_window_opacity(opacity: u8) -> () {
         .expect("Failed to start picom-trans");
 }
 
-fn is_process_running(process_name: &str) -> bool {
-    if let Ok(output) = Command::new("pgrep")
+fn is_process_running(process_name: &str) -> Result<bool> {
+    let output = Command::new("pgrep")
         .arg(process_name)
         .stdout(Stdio::piped())
-        .spawn()
-    {
-        let reader = BufReader::new(output.stdout.unwrap());
+        .spawn()?;
+
+    if let Some(output) = output.stdout {
+        let reader = BufReader::new(output);
         for line in reader.lines() {
             if line.is_ok() {
-                return true;
+                return Ok(true);
             }
         }
     }
 
-    false
+    Ok(false)
 }
 
 fn main() -> Result<()> {
     let process_name = "picom";
 
-    if !is_process_running(process_name) {
-        eprintln!("{} is not running.", process_name);
+    if let Err(err) = is_process_running(process_name) {
+        eprintln!("Error checking if picom is running: {}", err);
         exit(1);
     }
 
-    // TODO: Parse initial_opacity from config file
+    // Define the initial opacity (TODO: read from config file)
     let initial_opacity: u8 = 1;
 
     let current_opacity = match get_current_window_opacity() {
@@ -78,14 +77,15 @@ fn main() -> Result<()> {
         }
     };
 
-    // TODO: Parse step_size from config file
+    // Define the step size (TODO: read from config file)
     for opacity in (initial_opacity..=current_opacity).step_by(2) {
         set_window_opacity(opacity);
-        // TODO: Parse sleep_duration from config file
+        // Define the sleep duration (TODO: read from config file)
         sleep(Duration::from_millis(12));
     }
 
     let _signal_handler = ctrlc::set_handler(move || {
+        // Restore the original opacity and exit when a signal is received
         set_window_opacity(current_opacity);
         exit(0);
     })

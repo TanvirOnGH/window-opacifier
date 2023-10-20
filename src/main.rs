@@ -4,18 +4,9 @@ extern crate toml;
 #[macro_use]
 extern crate serde_derive;
 
-use std::fs::File;
-use std::io::Read;
-
+mod config;
 mod picom;
 mod utils;
-
-#[derive(Deserialize)]
-struct Config {
-    initial_opacity: u8,
-    step_size: u8,
-    sleep_duration_ms: u64,
-}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let process_name = "picom";
@@ -32,10 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err(format!("Configuration file not found at {}", config_path.display()).into());
     }
 
-    let mut config_file = File::open(config_path)?;
-    let mut config_content = String::new();
-    config_file.read_to_string(&mut config_content)?;
-    let config: Config = toml::from_str(&config_content)?;
+    let config = config::read_config(config_path.to_str().unwrap())?;
 
     let current_opacity = picom::get_current_window_opacity()?;
 

@@ -2,11 +2,14 @@ extern crate anyhow;
 use crate::config::Config;
 use crate::utils;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::{process::Command, str::FromStr};
 
 pub fn get_current_window_opacity() -> Result<u8> {
-    let output = Command::new("picom-trans").args(["-c", "-g"]).output()?;
+    let output = Command::new("picom-trans")
+        .args(["-c", "-g"])
+        .output()
+        .with_context(|| "Failed to execute picom-trans command")?;
 
     if output.status.success() {
         let output_str = String::from_utf8_lossy(&output.stdout);
@@ -43,7 +46,9 @@ pub fn animate_opacity(config: &Config, current_opacity: u8) {
 pub fn check_picom_process() -> Result<()> {
     let process_name = "picom";
 
-    if !utils::is_process_running(process_name)? {
+    if !utils::is_process_running(process_name)
+        .with_context(|| format!("Failed to check if {} process is running", process_name))?
+    {
         eprintln!("Error: {} is not running.", process_name);
         std::process::exit(1);
     }

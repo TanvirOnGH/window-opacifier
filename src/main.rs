@@ -9,10 +9,13 @@ mod config;
 mod picom;
 mod utils;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 fn main() -> Result<()> {
-    let home_dir = dirs::home_dir().ok_or(anyhow::anyhow!("Unable to determine home directory"))?;
+    let home_dir = dirs::home_dir()
+        .ok_or(anyhow::anyhow!("Unable to determine home directory"))
+        .with_context(|| "Failed to determine home directory")?;
+
     let config_path = home_dir.join(".config/window-opacifier/config.toml");
 
     if !config_path.exists() {
@@ -20,16 +23,20 @@ fn main() -> Result<()> {
             "Configuration file not found at {}. Creating one with default values.",
             config_path.display()
         );
-        config::create_default_config(config_path.to_str().unwrap())?;
+        config::create_default_config(config_path.to_str().unwrap())
+            .with_context(|| "Failed to create default config")?;
     }
 
-    let config = config::read_config(config_path.to_str().unwrap())?;
+    let config = config::read_config(config_path.to_str().unwrap())
+        .with_context(|| "Failed to read config file")?;
 
-    picom::check_picom_process()?;
+    picom::check_picom_process().with_context(|| "Failed to check picom process")?;
 
-    let current_opacity = picom::get_current_window_opacity()?;
+    let current_opacity = picom::get_current_window_opacity()
+        .with_context(|| "Failed to get current window opacity")?;
 
-    utils::set_signal_handler(current_opacity)?;
+    utils::set_signal_handler(current_opacity).with_context(|| "Failed to set signal handler")?;
+
     picom::animate_opacity(&config, current_opacity);
 
     Ok(())

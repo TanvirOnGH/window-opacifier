@@ -12,13 +12,6 @@ mod utils;
 use anyhow::Result;
 
 fn main() -> Result<()> {
-    let process_name = "picom";
-
-    if !utils::is_process_running(process_name)? {
-        eprintln!("Error: {} is not running.", process_name);
-        std::process::exit(1);
-    }
-
     let home_dir = dirs::home_dir().ok_or(anyhow::anyhow!("Unable to determine home directory"))?;
     let config_path = home_dir.join(".config/window-opacifier/config.toml");
 
@@ -31,6 +24,8 @@ fn main() -> Result<()> {
     }
 
     let config = config::read_config(config_path.to_str().unwrap())?;
+
+    picom::check_picom_process()?;
 
     let current_opacity = picom::get_current_window_opacity()?;
 

@@ -1,5 +1,6 @@
 extern crate anyhow;
 use crate::config::Config;
+use crate::utils;
 
 use anyhow::Result;
 use std::{process::Command, str::FromStr};
@@ -37,4 +38,15 @@ pub fn animate_opacity(config: &Config, current_opacity: u8) {
         set_window_opacity(opacity);
         std::thread::sleep(std::time::Duration::from_millis(config.sleep_duration_ms));
     }
+}
+
+pub fn check_picom_process() -> Result<()> {
+    let process_name = "picom";
+
+    if !utils::is_process_running(process_name)? {
+        eprintln!("Error: {} is not running.", process_name);
+        std::process::exit(1);
+    }
+
+    Ok(())
 }

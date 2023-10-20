@@ -16,3 +16,7 @@ maintenance = { status = "experimental" }
 
 [dependencies]
 ctrlc = ">=3.4.1"
+toml = ">=0.8.2"
+serde_derive = ">=1.0.189"
+serde = ">=1.0.189"
+dirs = ">=5.0.1"

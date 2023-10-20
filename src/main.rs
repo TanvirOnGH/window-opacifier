@@ -12,7 +12,7 @@ use std::{
 
 fn get_current_window_opacity() -> Result<u8> {
     // Get the opacity of the current window using the 'picom-trans' command
-    let output = Command::new("picom-trans").args(&["-c", "-g"]).output()?;
+    let output = Command::new("picom-trans").args(["-c", "-g"]).output()?;
 
     if output.status.success() {
         let output_str = String::from_utf8_lossy(&output.stdout);
@@ -31,7 +31,7 @@ fn get_current_window_opacity() -> Result<u8> {
     ))
 }
 
-fn set_window_opacity(opacity: u8) -> () {
+fn set_window_opacity(opacity: u8) {
     Command::new("picom-trans")
         .arg("-c")
         .arg("-o")
@@ -84,7 +84,7 @@ fn main() -> Result<()> {
         sleep(Duration::from_millis(12));
     }
 
-    let _signal_handler = ctrlc::set_handler(move || {
+    ctrlc::set_handler(move || {
         // Restore the original opacity and exit when a signal is received
         set_window_opacity(current_opacity);
         exit(0);

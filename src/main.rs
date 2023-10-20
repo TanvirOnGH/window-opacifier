@@ -77,19 +77,19 @@ fn main() -> Result<()> {
         }
     };
 
-    // Define the step size (TODO: read from config file)
-    for opacity in (initial_opacity..=current_opacity).step_by(2) {
-        set_window_opacity(opacity);
-        // Define the sleep duration (TODO: read from config file)
-        sleep(Duration::from_millis(12));
-    }
-
     ctrlc::set_handler(move || {
         // Restore the original opacity and exit when a signal is received
         set_window_opacity(current_opacity);
         exit(0);
     })
     .expect("Failed to set signal handler");
+
+    // Define the step size (TODO: read from config file)
+    for opacity in (initial_opacity..=current_opacity).step_by(2) {
+        set_window_opacity(opacity);
+        // Define the sleep duration (TODO: read from config file)
+        sleep(Duration::from_millis(12));
+    }
 
     Ok(())
 }

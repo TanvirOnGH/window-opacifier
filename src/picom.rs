@@ -1,3 +1,7 @@
+//! Module for interacting with the picom compositor in the Window Opacifier application.
+//!
+//! This module provides functions for checking the picom process, getting and setting the window opacity,
+//! and animating the opacity of the current window.
 extern crate anyhow;
 use crate::config::Config;
 use crate::utils;
@@ -5,6 +9,13 @@ use crate::utils;
 use anyhow::{Context, Result};
 use std::{process::Command, str::FromStr};
 
+/// Retrieves the current opacity of the window.
+///
+/// This function executes the 'picom-trans' command to obtain the current opacity of the active window.
+///
+/// # Errors
+///
+/// This function returns an error if it fails to execute the 'picom-trans' command or parse the output.
 pub fn get_current_window_opacity() -> Result<u8> {
     let output = Command::new("picom-trans")
         .args(["-c", "-g"])
@@ -27,6 +38,9 @@ pub fn get_current_window_opacity() -> Result<u8> {
     ))
 }
 
+/// Sets the opacity of the window.
+///
+/// This function uses the 'picom-trans' command to set the opacity of the active window to the specified value.
 pub fn set_window_opacity(opacity: u8) {
     Command::new("picom-trans")
         .arg("-c")
@@ -36,6 +50,14 @@ pub fn set_window_opacity(opacity: u8) {
         .expect("Failed to start picom-trans");
 }
 
+/// Animates the opacity of the current window.
+///
+/// This function animates the opacity of the current window by gradually changing it according to
+/// the specified configuration.
+///
+/// # Errors
+///
+/// This function returns an error if any of the underlying functions fail.
 pub fn animate_opacity(config: &Config, current_opacity: u8) {
     for opacity in (config.initial_opacity..=current_opacity).step_by(config.step_size as usize) {
         set_window_opacity(opacity);
@@ -43,6 +65,13 @@ pub fn animate_opacity(config: &Config, current_opacity: u8) {
     }
 }
 
+/// Checks if the picom process is running.
+///
+/// This function verifies if the picom compositor process is running.
+///
+/// # Errors
+///
+/// This function returns an error if it fails to check the picom process status.
 pub fn check_picom_process() -> Result<()> {
     let process_name = "picom";
 

@@ -1,3 +1,4 @@
+//! The main entry point of the Window Opacifier application.
 extern crate ctrlc;
 extern crate toml;
 
@@ -11,6 +12,11 @@ mod utils;
 
 use anyhow::{Context, Result};
 
+/// The main function that runs the Window Opacifier application.
+///
+/// # Errors
+///
+/// This function returns an error if any of the tasks fail.
 fn main() -> Result<()> {
     let home_dir = dirs::home_dir()
         .ok_or(anyhow::anyhow!("Unable to determine home directory"))

@@ -1,6 +1,15 @@
+//! Module for working with configuration data in the Window Opacifier application.
+//!
+//! This module provides functionality to read and create a configuration file for the Window Opacifier
+//! application. It defines the structure of the configuration data and supports serialization and
+//! deserialization to/from TOML format.
 use anyhow::{Context, Result};
 use std::{fs, io::Read, path::Path};
 
+// Struct representing the configuration data.
+///
+/// This struct defines the configuration parameters used by the Window Opacifier application. It
+/// specifies the initial opacity, step size, and sleep duration in milliseconds.
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     pub initial_opacity: u8,
@@ -8,6 +17,13 @@ pub struct Config {
     pub sleep_duration_ms: u64,
 }
 
+/// Reads the configuration from a file.
+///
+/// This function reads the configuration data from a specified file in TOML format.
+///
+/// # Errors
+///
+/// This function returns an error if it fails to open, read, or parse the configuration file.
 pub fn read_config(config_path: &str) -> Result<Config> {
     let mut config_file = fs::File::open(config_path)
         .with_context(|| format!("Failed to open config file: {}", config_path))?;
@@ -23,6 +39,14 @@ pub fn read_config(config_path: &str) -> Result<Config> {
     Ok(config)
 }
 
+/// Creates a default configuration file.
+///
+/// This function creates a default configuration file with predefined values and saves it in the
+/// specified path.
+///
+/// # Errors
+///
+/// This function returns an error if it fails to serialize or write the default configuration to the file.
 pub fn create_default_config(config_path: &str) -> Result<()> {
     let config = Config {
         initial_opacity: 1,

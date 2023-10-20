@@ -27,16 +27,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let current_opacity = picom::get_current_window_opacity()?;
 
-    // Restore the original opacity and exit when a signal is received
-    ctrlc::set_handler(move || {
-        picom::set_window_opacity(current_opacity);
-        std::process::exit(0);
-    })?;
-
-    for opacity in (config.initial_opacity..=current_opacity).step_by(config.step_size as usize) {
-        picom::set_window_opacity(opacity);
-        std::thread::sleep(std::time::Duration::from_millis(config.sleep_duration_ms));
-    }
+    utils::set_signal_handler(current_opacity)?;
+    picom::animate_opacity(&config, current_opacity);
 
     Ok(())
 }

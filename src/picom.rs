@@ -1,3 +1,4 @@
+use crate::config::Config;
 use std::{error::Error, process::Command, str::FromStr};
 
 pub fn get_current_window_opacity() -> Result<u8, Box<dyn Error>> {
@@ -24,4 +25,11 @@ pub fn set_window_opacity(opacity: u8) {
         .arg(&opacity.to_string())
         .spawn()
         .expect("Failed to start picom-trans");
+}
+
+pub fn animate_opacity(config: &Config, current_opacity: u8) {
+    for opacity in (config.initial_opacity..=current_opacity).step_by(config.step_size as usize) {
+        set_window_opacity(opacity);
+        std::thread::sleep(std::time::Duration::from_millis(config.sleep_duration_ms));
+    }
 }

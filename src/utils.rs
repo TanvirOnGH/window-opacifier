@@ -1,3 +1,4 @@
+use crate::picom;
 use std::{error::Error, io::BufRead, io::BufReader, process::Command};
 
 pub fn is_process_running(process_name: &str) -> Result<bool, Box<dyn Error>> {
@@ -16,4 +17,14 @@ pub fn is_process_running(process_name: &str) -> Result<bool, Box<dyn Error>> {
     }
 
     Ok(false)
+}
+
+pub fn set_signal_handler(current_opacity: u8) -> Result<(), Box<dyn std::error::Error>> {
+    // Restore the original opacity and exit when a signal is received
+    ctrlc::set_handler(move || {
+        picom::set_window_opacity(current_opacity);
+        std::process::exit(0);
+    })?;
+
+    Ok(())
 }
